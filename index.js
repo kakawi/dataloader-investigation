@@ -14,12 +14,14 @@ const dataLoader = new DataLoader(batchLoadFunction);
 
 // Use the DataLoader to load data
 (async () => {
+  // 1. Sync calls
   const p1 = dataLoader.load(1);
   const p2 = dataLoader.load(2);
   Promise.all([p1, p2]).then((results) => {
     console.log(results);
   });
 
+  // 2. Next tick calls
   process.nextTick(() => {
     console.log("next tick");
     const p3 = dataLoader.load(3);
@@ -28,6 +30,8 @@ const dataLoader = new DataLoader(batchLoadFunction);
       console.log(results);
     });
   });
+
+  // 3. Promise calls
   Promise.resolve().then(() => {
     console.log("promise");
     const p5 = dataLoader.load(5);
@@ -35,16 +39,20 @@ const dataLoader = new DataLoader(batchLoadFunction);
     Promise.all([p5, p6]).then((results) => {
       console.log(results);
     });
+
+    // 4. Next tick inside promise
     process.nextTick(() => {
-      console.log("next tick inside promise resolve handle");
+      console.log("next tick inside promise");
       const p7 = dataLoader.load(7);
       const p8 = dataLoader.load(8);
       Promise.all([p7, p8]).then((results) => {
         console.log(results);
       });
     });
+
+    // 5. Promise inside promise
     Promise.resolve().then(() => {
-      console.log("promise inside promise resolve handle");
+      console.log("promise inside promise");
       const p9 = dataLoader.load(9);
       const p10 = dataLoader.load(10);
       Promise.all([p9, p10]).then((results) => {
